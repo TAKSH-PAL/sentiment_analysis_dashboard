@@ -19,6 +19,33 @@ if api_key:
 else:
     logger.warning("GEMINI_API_KEY not found in environment. Using fallback local heuristics.")
 
+def generate_content_with_fallback(contents, config=None):
+    """
+    Attempts to call generate_content with a fallback model sequence to handle 503/429 errors.
+    """
+    models = ['gemma-4-31b-it', 'gemma-4-26b-a4b-it', 'gemma-4-26b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash']
+    last_err = None
+    for model in models:
+        try:
+            logger.info(f"Attempting API call with model: {model}")
+            if config:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=contents,
+                    config=config
+                )
+            else:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=contents
+                )
+            return response
+        except Exception as e:
+            last_err = e
+            logger.warning(f"Model {model} failed: {e}. Trying fallback...")
+            continue
+    raise last_err
+
 def analyze_review_absa(text: str, category: str = "smartwatch"):
     """
     Performs Aspect-Based Sentiment Analysis on a single review.
@@ -51,8 +78,7 @@ def analyze_review_absa(text: str, category: str = "smartwatch"):
             Review text: "{text}"
             """
             
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
+            response = generate_content_with_fallback(
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
@@ -163,8 +189,7 @@ def diagnose_anomaly(aspect: str, product_name: str, reviews: list):
             Reviews:
             {reviews_text}
             """
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
+            response = generate_content_with_fallback(
                 contents=prompt
             )
             return response.text
@@ -200,8 +225,7 @@ def generate_business_report(metrics_summary: dict):
             Data Summary:
             {json.dumps(metrics_summary, indent=2)}
             """
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
+            response = generate_content_with_fallback(
                 contents=prompt
             )
             return response.text
