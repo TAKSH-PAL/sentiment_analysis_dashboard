@@ -67,8 +67,18 @@ def analyze_review_absa(text: str, category: str = "smartwatch"):
             pass
 
     # Heuristic Fallback
+    import re
     results = []
-    text_lower = text.lower()
+    
+    # Split text into clauses/segments using punctuation and common contrast conjunctions
+    delimiters = r'\.|\,|\;|\!|\?|\bbut\b|\byet\b|\balthough\b|\bthough\b|\bwhile\b'
+    segments = [s.strip() for s in re.split(delimiters, text, flags=re.IGNORECASE) if s.strip()]
+    
+    # Filter aspects by category to prevent false positives
+    if category == "smartwatch":
+        valid_aspects = ["battery", "display", "strap", "connectivity", "sensors", "price"]
+    else:
+        valid_aspects = ["sound", "battery", "connectivity", "mic", "comfort", "price"]
     
     # Simple rule-based matchers
     keywords = {
@@ -84,35 +94,52 @@ def analyze_review_absa(text: str, category: str = "smartwatch"):
     }
     
     sentiment_words = {
-        "positive": ["good", "great", "excellent", "love", "awesome", "premium", "accurate", "crisp", "clear", "superb"],
-        "negative": ["bad", "poor", "waste", "useless", "worst", "fail", "slow", "lag", "cheap", "broke", "rash", "muffled", "muff", "disappoint"]
+        "positive": ["good", "great", "excellent", "love", "awesome", "premium", "accurate", "crisp", "clear", "superb", "bright", "gorgeous", "beautiful", "nice", "perfect", "satisf", "impress", "comfortable", "comfort", "seamless", "smooth", "easy", "fast", "quick", "best", "happy", "value"],
+        "negative": ["bad", "poor", "waste", "useless", "worst", "fail", "slow", "lag", "broke", "rash", "muffled", "terrible", "disappoint", "disconnect", "regret", "faulty", "defect", "scratch", "leak", "cheap", "disconnects", "pain", "hurt", "uncomfortable", "difficult", "hard", "issue", "problem", "broken", "stopped", "died", "drain", "error", "glitch", "bug"]
     }
     
-    for aspect, words in keywords.items():
-        found = False
-        snippet = ""
-        # Check if aspect category keywords exist in text
-        for word in words:
-            if word in text_lower:
-                found = True
-                # Extract a basic snippet around the word
-                idx = text_lower.find(word)
-                start = max(0, idx - 20)
-                end = min(len(text), idx + 30)
-                snippet = text[start:end].strip()
-                break
-        
-        if found:
-            # Determine sentiment
+    for aspect in valid_aspects:
+        aspect_words = keywords[aspect]
+        matching_segments = []
+        for seg in segments:
+            seg_lower = seg.lower()
+            if any(w in seg_lower for w in aspect_words):
+                matching_segments.append(seg)
+                
+        if matching_segments:
+            # Use the first matching segment as the snippet
+            snippet = matching_segments[0]
+            snippet_lower = snippet.lower()
+            
+            negations = ["not", "no", "never", "n't", "wasn't", "isn't", "don't", "doesn't", "didn't", "cannot", "cant", "won't", "wont"]
+            
+            def check_word_presence_and_negation(words_list):
+                for word in words_list:
+                    if word in snippet_lower:
+                        idx = snippet_lower.find(word)
+                        pre_context = snippet_lower[max(0, idx - 15):idx]
+                        is_negated = False
+                        for neg in negations:
+                            if re.search(r'\b' + re.escape(neg) + r'\b', pre_context):
+                                is_negated = True
+                                break
+                        return True, is_negated
+                return False, False
+            
+            found_pos, pos_negated = check_word_presence_and_negation(sentiment_words["positive"])
+            found_neg, neg_negated = check_word_presence_and_negation(sentiment_words["negative"])
+            
             sent = "neutral"
-            for word in sentiment_words["positive"]:
-                if word in text_lower:
-                    sent = "positive"
-                    break
-            for word in sentiment_words["negative"]:
-                if word in text_lower:
-                    sent = "negative"
-                    break
+            if found_pos and not pos_negated:
+                sent = "positive"
+            elif found_pos and pos_negated:
+                sent = "negative"
+                
+            if found_neg and not neg_negated:
+                sent = "negative"
+            elif found_neg and neg_negated:
+                sent = "positive"
+                
             results.append({"aspect": aspect, "sentiment": sent, "snippet": snippet})
             
     return results

@@ -12,7 +12,27 @@ A modern, high-fidelity Brand Intelligence and Business Intelligence (BI) consol
 
 ---
 
+## 📸 Visual Preview & Video Walkthrough
+
+### 🎬 Interactive Dashboard Video Walkthrough
+Below is the screen recording capturing the full user flow, tab transitions, and AI report generator functions:
+
+![Interactive Walkthrough](images/demo.webp)
+
+### 🖼️ Screenshot Gallery
+
+| BI Console Overview | Competitor Radar Benchmarking |
+| :---: | :---: |
+| ![BI Console Overview](images/overview.png) | ![Competitor Radar Matrix](images/competitors.png) |
+
+| AI Alerts (Anomalies & Diagnostics) | ABSA Interactive Playground |
+| :---: | :---: |
+| ![AI Alerts & Gemini Diagnostics](images/alerts.png) | ![ABSA Playground Results](images/playground.png) |
+
+---
+
 ## 📖 Table of Contents
+* [📸 Visual Preview & Video Walkthrough](#-visual-preview--video-walkthrough)
 * [🎯 JD Alignment Summary](#-jd-alignment-summary)
 * [💡 Core Features](#-core-features)
 * [📊 Seeded BI & Sentiment Scenarios](#-seeded-bi--sentiment-scenarios)

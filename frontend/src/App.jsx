@@ -168,7 +168,7 @@ function App() {
           <p className="caption-mono" style={{ fontWeight: 600 }}>Loading Aura Engine metrics...</p>
           <p className="caption-mono" style={{ fontSize: '11px', color: 'var(--color-mute)' }}>Elapsed time: {elapsedSeconds}s</p>
         </div>
-        
+
         {isWakingUp && (
           <div className="card-soft" style={{ maxWidth: '450px', border: '1px solid var(--color-hairline)', boxShadow: 'var(--shadow-level-2)', backgroundColor: 'var(--color-canvas)' }}>
             <span className="badge-secondary" style={{ marginBottom: '10px', backgroundColor: 'var(--color-warning-soft)', color: 'var(--color-warning-deep)' }}>
