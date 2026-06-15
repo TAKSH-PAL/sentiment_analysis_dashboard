@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar, 
+import {
+  LineChart, Line, AreaChart, Area, BarChart, Bar,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { 
-  TrendingUp, BarChart3, Users, AlertOctagon, 
+import {
+  TrendingUp, BarChart3, Users, AlertOctagon,
   FileText, Activity, ShieldAlert, Cpu, RefreshCw, Send,
   ArrowUpRight, Award, DollarSign, ShoppingCart, MessageSquare, ExternalLink
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://sentiment-analysis-dashboard-wf9k.onrender.com';
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Data States
   const [overviewData, setOverviewData] = useState(null);
   const [aspectProduct, setAspectProduct] = useState('noise_watch_5');
@@ -25,7 +25,7 @@ function App() {
   const [competitorsData, setCompetitorsData] = useState(null);
   const [campaignsData, setCampaignsData] = useState([]);
   const [anomaliesData, setAnomaliesData] = useState([]);
-  
+
   // Interactive Tools States
   const [reportMarkdown, setReportMarkdown] = useState('');
   const [generatingReport, setGeneratingReport] = useState(false);
@@ -167,7 +167,7 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      
+
       {/* Sticky header navbar */}
       <header className="flex-between" style={{
         height: '64px',
@@ -206,7 +206,7 @@ function App() {
             { id: 'report', label: 'Report Generator', icon: <FileText size={16} /> },
             { id: 'playground', label: 'ABSA Playground', icon: <Cpu size={16} /> }
           ].map(tab => (
-            <button 
+            <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               style={{
@@ -272,7 +272,7 @@ function App() {
       {/* Main Panel Content */}
       <main style={{ flex: 1, padding: '32px 0' }}>
         <div className="container">
-          
+
           {/* TAB 1: BI OVERVIEW CONSOLE */}
           {activeTab === 'overview' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -301,7 +301,7 @@ function App() {
 
               {/* Chart Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-                
+
                 {/* Sales Units Trend Line Chart */}
                 <div className="card-marketing" style={{ minHeight: '400px' }}>
                   <h3 className="display-sm" style={{ marginBottom: '20px' }}>Units Sold Over Time</h3>
@@ -310,12 +310,12 @@ function App() {
                       <AreaChart data={overviewData?.timeline} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="noise_gradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#171717" stopOpacity={0.15}/>
-                            <stop offset="95%" stopColor="#171717" stopOpacity={0.01}/>
+                            <stop offset="5%" stopColor="#171717" stopOpacity={0.15} />
+                            <stop offset="95%" stopColor="#171717" stopOpacity={0.01} />
                           </linearGradient>
                           <linearGradient id="boat_gradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#7928ca" stopOpacity={0.15}/>
-                            <stop offset="95%" stopColor="#7928ca" stopOpacity={0.01}/>
+                            <stop offset="5%" stopColor="#7928ca" stopOpacity={0.15} />
+                            <stop offset="95%" stopColor="#7928ca" stopOpacity={0.01} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-hairline)" />
@@ -400,12 +400,12 @@ function App() {
           {/* TAB 2: ASPECT-BASED SENTIMENT ANALYSIS HUB */}
           {activeTab === 'aspects' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              
+
               {/* Product Filter Row */}
               <div className="flex-between">
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {overviewData?.products.map(p => (
-                    <button 
+                    <button
                       key={p.id}
                       onClick={() => setAspectProduct(p.id)}
                       className={aspectProduct === p.id ? 'btn-primary-sm' : 'btn-secondary-sm'}
@@ -420,7 +420,7 @@ function App() {
               {/* Core metrics breakdown */}
               {aspectsData ? (
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', gap: '24px' }}>
-                  
+
                   {/* Aspect Sentiment Ratio Bar Charts */}
                   <div className="card-marketing">
                     <h3 className="display-sm" style={{ marginBottom: '24px' }}>Aspect-Sentiment Profiles</h3>
@@ -451,19 +451,19 @@ function App() {
                   {/* Customer Review Snippets Drill-down */}
                   <div className="card-marketing" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     <h3 className="display-sm">Aspect Review Snippets</h3>
-                    
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '500px', overflowY: 'auto', paddingRight: '8px' }}>
                       {aspectsData.aspects.map(asp => {
                         const lowAsp = asp.aspect.toLowerCase();
                         const pSnippets = aspectsData.snippets[lowAsp]?.positive || [];
                         const nSnippets = aspectsData.snippets[lowAsp]?.negative || [];
-                        
+
                         return (
                           <div key={asp.aspect} style={{ borderBottom: '1px solid var(--color-hairline)', paddingBottom: '16px' }}>
                             <div className="caption-mono" style={{ color: 'var(--color-primary)', fontWeight: 'bold', marginBottom: '10px' }}>
                               {asp.aspect} Tagged Quotes
                             </div>
-                            
+
                             {/* Positives */}
                             {pSnippets.length > 0 && (
                               <div style={{ marginBottom: '10px' }}>
@@ -520,17 +520,17 @@ function App() {
           {/* TAB 3: COMPETITOR BENCHMARKING MATRIX */}
           {activeTab === 'competitors' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              
+
               {/* Category selector */}
               <div className="flex-between">
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
+                  <button
                     onClick={() => setCompetitorCat('smartwatch')}
                     className={competitorCat === 'smartwatch' ? 'btn-primary-sm' : 'btn-secondary-sm'}
                   >
                     Smartwatches (Noise vs boAt vs Fire-Boltt)
                   </button>
-                  <button 
+                  <button
                     onClick={() => setCompetitorCat('audio')}
                     className={competitorCat === 'audio' ? 'btn-primary-sm' : 'btn-secondary-sm'}
                   >
@@ -542,7 +542,7 @@ function App() {
 
               {/* Competitor Radar and Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                
+
                 {/* Recharts Radar Chart */}
                 <div className="card-marketing" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '420px' }}>
                   <h3 className="display-sm" style={{ alignSelf: 'flex-start', marginBottom: '20px' }}>Aspect Comparison Radar</h3>
@@ -569,7 +569,7 @@ function App() {
                 {/* Head-to-Head Comparison Table Grid */}
                 <div className="card-marketing" style={{ minHeight: '420px' }}>
                   <h3 className="display-sm" style={{ marginBottom: '20px' }}>Aspect Grid Scorecard (% Positive Sentiment)</h3>
-                  
+
                   <div className="data-table-container">
                     <table className="data-table">
                       <thead>
@@ -629,7 +629,7 @@ function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               <div className="card-marketing">
                 <h3 className="display-sm" style={{ marginBottom: '24px' }}>Influencer Campaign ROI Matrix</h3>
-                
+
                 <div className="data-table-container">
                   <table className="data-table">
                     <thead>
@@ -706,7 +706,7 @@ function App() {
           {/* TAB 5: AI ANOMALIES & ALERTS */}
           {activeTab === 'anomalies' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-              
+
               {/* Trigger Notification Alert if active */}
               {anomaliesData.length > 0 && (
                 <div style={{
@@ -751,7 +751,7 @@ function App() {
                         <div className="caption-mono" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-primary)', fontWeight: 'bold', marginBottom: '12px' }}>
                           <Cpu size={14} /> Gemini Root Cause Analysis
                         </div>
-                        
+
                         <div style={{ fontSize: '14px', lineHeight: 1.6 }} className="markdown-body">
                           {a.diagnostic_report.split('\n').map((line, lidx) => {
                             if (line.startsWith('###')) {
@@ -759,7 +759,7 @@ function App() {
                             }
                             if (line.startsWith('**') || line.includes('**')) {
                               // basic parse bold
-                              return <p key={lidx} style={{ margin: '6px 0' }} dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />;
+                              return <p key={lidx} style={{ margin: '6px 0' }} dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
                             }
                             return <p key={lidx} style={{ margin: '6px 0' }}>{line}</p>;
                           })}
@@ -793,8 +793,8 @@ function App() {
                     <h3 className="display-sm">Automated BI Executive Summaries</h3>
                     <p className="body-sm">Generates structured business summaries summarizing recent brand performance, competitor alerts, and influencer ROI.</p>
                   </div>
-                  <button 
-                    onClick={generateAIReport} 
+                  <button
+                    onClick={generateAIReport}
                     disabled={generatingReport}
                     className="btn-primary flex-gap-sm"
                   >
@@ -825,7 +825,7 @@ function App() {
                         Print / Save PDF
                       </button>
                     </div>
-                    
+
                     {/* Render basic markdown */}
                     <div style={{ fontSize: '15px', lineHeight: '1.6' }}>
                       {reportMarkdown.split('\n').map((line, idx) => {
@@ -839,9 +839,9 @@ function App() {
                           return <h3 key={idx} className="body-md-strong" style={{ margin: '14px 0 6px 0' }}>{line.replace('### ', '')}</h3>;
                         }
                         if (line.startsWith('- ')) {
-                          return <li key={idx} style={{ marginLeft: '20px', listStyleType: 'disc', margin: '4px 0' }} dangerouslySetInnerHTML={{__html: line.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />;
+                          return <li key={idx} style={{ marginLeft: '20px', listStyleType: 'disc', margin: '4px 0' }} dangerouslySetInnerHTML={{ __html: line.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
                         }
-                        return <p key={idx} style={{ margin: '10px 0' }} dangerouslySetInnerHTML={{__html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />;
+                        return <p key={idx} style={{ margin: '10px 0' }} dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
                       })}
                     </div>
                   </div>
@@ -865,7 +865,7 @@ function App() {
           {/* TAB 7: INTERACTIVE ABSA PLAYGROUND */}
           {activeTab === 'playground' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-              
+
               {/* Play Input */}
               <div className="card-marketing">
                 <h3 className="display-sm" style={{ marginBottom: '16px' }}>Input Review Paragraph</h3>
@@ -873,9 +873,9 @@ function App() {
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <label className="caption-mono">Product Domain</label>
-                      <select 
-                        value={playgroundCat} 
-                        onChange={(e) => setPlaygroundCat(e.target.value)} 
+                      <select
+                        value={playgroundCat}
+                        onChange={(e) => setPlaygroundCat(e.target.value)}
                         className="form-input form-select"
                       >
                         <option value="smartwatch">Smartwatch (Extract: battery, display, strap, connectivity, sensors, price)</option>
@@ -886,7 +886,7 @@ function App() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <label className="caption-mono">Review Text</label>
-                    <textarea 
+                    <textarea
                       value={playgroundText}
                       onChange={(e) => setPlaygroundText(e.target.value)}
                       placeholder="e.g., The display is really bright and sharp, and battery easily lasts 5 days. However, the strap is highly uncomfortable and broke in the first week."
@@ -896,8 +896,8 @@ function App() {
                     />
                   </div>
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={analyzingPlayground || !playgroundText.trim()}
                     className="btn-primary flex-gap-md"
                     style={{ alignSelf: 'flex-start' }}
@@ -918,7 +918,7 @@ function App() {
               {/* ABSA Results Display */}
               <div className="card-marketing" style={{ minHeight: '380px' }}>
                 <h3 className="display-sm" style={{ marginBottom: '20px' }}>Extracted Aspect Sentiments</h3>
-                
+
                 {playgroundResults ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {playgroundResults.length > 0 ? (
