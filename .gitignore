@@ -1,0 +1,6 @@
+.venv
+.env
+.DESIGN.md
+.deployment.md
+.project_brainstorming.md
+__pycache__
