@@ -46,6 +46,47 @@ def generate_content_with_fallback(contents, config=None):
             continue
     raise last_err
 
+def extract_json_from_text(text: str):
+    """
+    Robustly extracts and parses JSON from text, even if wrapped in markdown code blocks
+    or containing leading/trailing conversational text.
+    """
+    import re
+    text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    pattern = r'```(?:json)?\s*(.*?)\s*```'
+    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+    if match:
+        json_str = match.group(1).strip()
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass
+
+    start_arr = text.find('[')
+    end_arr = text.rfind(']')
+    if start_arr != -1 and end_arr != -1 and end_arr > start_arr:
+        json_str = text[start_arr:end_arr+1].strip()
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass
+
+    start_obj = text.find('{')
+    end_obj = text.rfind('}')
+    if start_obj != -1 and end_obj != -1 and end_obj > start_obj:
+        json_str = text[start_obj:end_obj+1].strip()
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass
+
+    return json.loads(text)
+
 def analyze_review_absa(text: str, category: str = "smartwatch"):
     """
     Performs Aspect-Based Sentiment Analysis on a single review.
@@ -86,7 +127,7 @@ def analyze_review_absa(text: str, category: str = "smartwatch"):
                     temperature=0.1
                 )
             )
-            return json.loads(response.text)
+            return extract_json_from_text(response.text)
         except Exception as e:
             logger.error(f"Gemini ABSA error: {e}")
             # Fall through to fallback
