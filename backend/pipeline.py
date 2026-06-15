@@ -23,7 +23,7 @@ def generate_content_with_fallback(contents, config=None):
     """
     Attempts to call generate_content with a fallback model sequence to handle 503/429 errors.
     """
-    models = ['gemma-4-31b-it', 'gemma-4-26b-a4b-it', 'gemma-4-26b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash']
+    models = ['gemma-4-31b-it', 'gemma-4-26b-a4b-it', 'gemini-2.5-flash-lite' , 'gemini-2.5-flash']
     last_err = None
     for model in models:
         try:
