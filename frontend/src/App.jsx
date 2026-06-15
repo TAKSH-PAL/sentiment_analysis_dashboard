@@ -16,6 +16,8 @@ function App() {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isWakingUp, setIsWakingUp] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   // Data States
   const [overviewData, setOverviewData] = useState(null);
@@ -39,6 +41,21 @@ function App() {
     fetchOverview();
     fetchCampaigns();
     fetchAnomalies();
+
+    // Start a timer for loading/waking up feedback
+    const timer = setInterval(() => {
+      setElapsedSeconds(prev => prev + 1);
+    }, 1000);
+
+    // If still loading after 3 seconds, mark as waking up
+    const wakeUpTimeout = setTimeout(() => {
+      setIsWakingUp(true);
+    }, 3000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(wakeUpTimeout);
+    };
   }, []);
 
   // Fetch aspects when selected product changes
@@ -145,9 +162,29 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex-center" style={{ height: '100vh', flexDirection: 'column', gap: '20px' }}>
+      <div className="flex-center" style={{ height: '100vh', flexDirection: 'column', gap: '24px', padding: '40px', textAlign: 'center', backgroundColor: 'var(--color-canvas-soft)' }}>
         <RefreshCw size={40} className="animate-spin" style={{ color: 'var(--color-primary)' }} />
-        <p className="caption-mono">Loading Aura Engine metrics...</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p className="caption-mono" style={{ fontWeight: 600 }}>Loading Aura Engine metrics...</p>
+          <p className="caption-mono" style={{ fontSize: '11px', color: 'var(--color-mute)' }}>Elapsed time: {elapsedSeconds}s</p>
+        </div>
+        
+        {isWakingUp && (
+          <div className="card-soft" style={{ maxWidth: '450px', border: '1px solid var(--color-hairline)', boxShadow: 'var(--shadow-level-2)', backgroundColor: 'var(--color-canvas)' }}>
+            <span className="badge-secondary" style={{ marginBottom: '10px', backgroundColor: 'var(--color-warning-soft)', color: 'var(--color-warning-deep)' }}>
+              Server Waking Up (Cold Start)
+            </span>
+            <p className="body-sm-strong" style={{ marginBottom: '8px' }}>
+              The backend container is currently booting up.
+            </p>
+            <p className="body-sm" style={{ color: 'var(--color-body)', fontSize: '13px', lineHeight: 1.5 }}>
+              <strong>Reason:</strong> Render's free hosting tier puts servers to sleep after 15 minutes of inactivity to save resources.
+            </p>
+            <p className="body-sm" style={{ color: 'var(--color-body)', fontSize: '13px', marginTop: '6px' }}>
+              <strong>Expected time:</strong> 50 to 90 seconds. Please hold on, the dashboard will load automatically once ready!
+            </p>
+          </div>
+        )}
       </div>
     );
   }
