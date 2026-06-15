@@ -10,7 +10,7 @@ import {
   ArrowUpRight, Award, DollarSign, ShoppingCart, MessageSquare, ExternalLink
 } from 'lucide-react';
 
-const API_BASE_URL = 'https://sentiment-analysis-dashboard-wf9k.onrender.com';
+const API_BASE_URL = 'https://sentiment-analysis-dashboard-wf9k.onrender.com/api';
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
